@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class character : MonoBehaviour
+public class Character : MonoBehaviour
 {
     public GameObject block;
     public Collider2D parryTrigger;
@@ -91,6 +91,7 @@ public class character : MonoBehaviour
         {
             Debug.Log("popal");
             Destroy(col.gameObject);
+            TakeDamage();
         }
         if (col.CompareTag("Ladder"))
         {
@@ -106,5 +107,22 @@ public class character : MonoBehaviour
             rb.gravityScale = 1f;
             isClimbing = false;
         }
+    }
+
+    private void TakeDamage()
+    {
+        currentHealth--;
+        Debug.Log("Health: " + currentHealth);
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Character has died");
+        // Add death logic here
+        Destroy(gameObject);
     }
 }
