@@ -27,12 +27,10 @@ public class block : MonoBehaviour
             Destroy(col.gameObject);
             if (Time.time - clickTime < parryWindow)
             {
-                
                 Debug.Log("parry");
             }
             else
             {
-                
                 Debug.Log("block");
                 
             }
