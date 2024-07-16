@@ -2,19 +2,50 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Character : MonoBehaviour
 {
     public GameObject block;
     public Collider2D parryTrigger;
+    public Image healthScale;
+    private float basescaleLength = 100;
+    private float scaleLength = 100;
     public float speed = 5f;
     public float climbSpeed = 4f;
-    public int maxHealth = 3;
+    public bool damageTaken = false;
+    public int maxHealth = 100;
+    public int corrosionDamage = 4;
+    private int healAmount = 50;
+    private int prev_n_sec;
+
+
+    public Image corrosionScale;
+    private float corrosionScaleLength = 100;
+    public int corrosionSpeed = 20;
+    private float corrosionLevel = 0;
+    private float prevCorrosionLevel = 0;
+    public float corrosionMaxLevel = 100;
+    private bool scaleIsFull = false;
+    //private bool isCorrosionHealed = false;
+
+    private float timeWhenIsFull;
+    private float prevTime;
+    private float timer=0;
+    private int prevsecondsTimer;
+    private int secondsTimer;
 
     private int currentHealth;
     private Rigidbody2D rb;
     private bool isClimbing;
     private float inputVertical;
+
+    private bool isInCorrosion;
+    private float time_in_corrosion=0;
+    private float corrosionStart;
+
+
 
     void Start()
     {
@@ -31,6 +62,47 @@ public class Character : MonoBehaviour
         {
             Climb();
         }
+
+        if (isInCorrosion && scaleIsFull==false)
+        {
+            //Debug.Log(Time.time);
+            time_in_corrosion = Time.time - corrosionStart;
+            int n_sec = (int)time_in_corrosion;
+            if (prev_n_sec!= n_sec)
+            {
+                corrosionLevel = corrosionLevel + corrosionSpeed;
+            }
+            prev_n_sec = n_sec;
+            
+            //Debug.Log(n_sec);
+            //Debug.Log(corrosionLevel);
+            /*if (corrosionLevel != prevCorrosionLevel)
+            {
+                prevCorrosionLevel = corrosionLevel;
+                TakeCorrosionScale();
+            }*/
+            TakeCorrosionScale();
+            if (corrosionLevel >= corrosionMaxLevel && scaleIsFull==false)
+            {
+                scaleIsFull = true;
+                timeWhenIsFull = Time.time;
+            }
+        }
+
+        if (scaleIsFull)
+        {
+            timer = Time.time - timeWhenIsFull;
+            secondsTimer = (int)Math.Floor(timer);
+            //Debug.Log(Time.time);
+            
+            if (prevsecondsTimer != secondsTimer && scaleIsFull) {
+                prevsecondsTimer = secondsTimer;
+                TakeDamage(corrosionDamage, "corrosion");
+            }
+            
+            
+        }
+        
     }
 
     private void HandleMovement()
@@ -55,7 +127,7 @@ public class Character : MonoBehaviour
             filter.NoFilter();
             var colliders = new List<Collider2D>();
             Physics2D.OverlapCollider(parryTrigger, filter, colliders);
-            Debug.Log(colliders.Count);
+            //Debug.Log(colliders.Count);
             foreach (var collider in colliders)
             {
                 if (collider.CompareTag("bullet"))
@@ -90,14 +162,36 @@ public class Character : MonoBehaviour
     {
         if (col.CompareTag("bullet"))
         {
-            Debug.Log("popal");
+            //Debug.Log("popal");
             Destroy(col.gameObject);
-            TakeDamage();
-        }
-        if (col.CompareTag("Ladder"))
+            TakeDamage(15, "bullet");
+        } else if (col.CompareTag("Ladder"))
         {
             rb.gravityScale = 0f;
             isClimbing = true;
+        } else if (col.CompareTag("Corrosion"))
+        {
+            //Debug.Log("Corrosion");
+            isInCorrosion = true;
+            corrosionStart = Time.time;
+
+        } else if (col.CompareTag("Heal"))
+        {
+            currentHealth = currentHealth + healAmount;
+            if (currentHealth > maxHealth)
+            {
+                currentHealth = maxHealth;
+            }
+            TakeDamageScale(-healAmount);
+            Destroy(col.gameObject);
+        } else if (col.CompareTag("CorrosionHeal"))
+        {
+            corrosionScaleLength = corrosionMaxLevel;
+            corrosionLevel = 0;
+            corrosionScale.fillAmount = corrosionMaxLevel;
+            //isCorrosionHealed = true;
+            scaleIsFull = false;
+            Destroy(col.gameObject);
         }
     }
 
@@ -107,12 +201,48 @@ public class Character : MonoBehaviour
         {
             rb.gravityScale = 1f;
             isClimbing = false;
+        } else if (col.CompareTag("Corrosion"))
+        {
+            isInCorrosion = false;
         }
     }
 
-    private void TakeDamage()
+
+
+
+    public void TakeDamageScale(float amount)
     {
-        currentHealth--;
+        scaleLength = scaleLength - amount;
+        if (scaleLength > basescaleLength)
+        {
+            scaleLength = basescaleLength;
+        } else if (scaleLength < 0){
+            scaleLength = 0;
+        }
+        healthScale.fillAmount = scaleLength / basescaleLength;
+    }
+
+
+    
+    public void TakeCorrosionScale()
+    {
+        corrosionScaleLength = corrosionMaxLevel - corrosionLevel;
+        //Debug.Log(corrosionScaleLength);
+        corrosionScale.fillAmount = corrosionScaleLength / corrosionMaxLevel;
+    }
+    
+
+    private void TakeDamage(int amount, string trapType)
+    {
+        currentHealth = currentHealth - amount;
+        if (trapType == "bullet")
+        {
+            TakeDamageScale(15);
+        } else if (trapType == "corrosion")
+        {
+            TakeDamageScale(corrosionDamage);
+        }
+        
         Debug.Log("Health: " + currentHealth);
         if (currentHealth <= 0)
         {
@@ -125,5 +255,6 @@ public class Character : MonoBehaviour
         Debug.Log("Character has died");
         // Add death logic here
         Destroy(gameObject);
+        SceneManager.LoadScene("SampleScene");
     }
 }

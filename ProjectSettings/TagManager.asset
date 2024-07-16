@@ -7,11 +7,14 @@ TagManager:
   - bullet
   - Ladder
   - Item
+  - Corrosion
+  - Heal
+  - CorrosionHeal
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Upper_layer
   - Water
   - UI
   - 
