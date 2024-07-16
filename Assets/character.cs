@@ -10,6 +10,7 @@ public class Character : MonoBehaviour
     public float speed = 5f;
     public float climbSpeed = 4f;
     public int maxHealth = 3;
+
     private int currentHealth;
     private Rigidbody2D rb;
     private bool isClimbing;

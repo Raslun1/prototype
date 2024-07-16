@@ -6,6 +6,7 @@ TagManager:
   tags:
   - bullet
   - Ladder
+  - Item
   layers:
   - Default
   - TransparentFX
