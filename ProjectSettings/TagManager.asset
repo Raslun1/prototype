@@ -10,6 +10,7 @@ TagManager:
   - Corrosion
   - Heal
   - CorrosionHeal
+  - Character
   layers:
   - Default
   - TransparentFX

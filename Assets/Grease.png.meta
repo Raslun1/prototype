@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Grease_0: -892470926052352323
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

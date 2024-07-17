@@ -74,13 +74,6 @@ public class Character : MonoBehaviour
             }
             prev_n_sec = n_sec;
             
-            //Debug.Log(n_sec);
-            //Debug.Log(corrosionLevel);
-            /*if (corrosionLevel != prevCorrosionLevel)
-            {
-                prevCorrosionLevel = corrosionLevel;
-                TakeCorrosionScale();
-            }*/
             TakeCorrosionScale();
             if (corrosionLevel >= corrosionMaxLevel && scaleIsFull==false)
             {
@@ -93,8 +86,7 @@ public class Character : MonoBehaviour
         {
             timer = Time.time - timeWhenIsFull;
             secondsTimer = (int)Math.Floor(timer);
-            //Debug.Log(Time.time);
-            
+
             if (prevsecondsTimer != secondsTimer && scaleIsFull) {
                 prevsecondsTimer = secondsTimer;
                 TakeDamage(corrosionDamage, "corrosion");
@@ -127,7 +119,6 @@ public class Character : MonoBehaviour
             filter.NoFilter();
             var colliders = new List<Collider2D>();
             Physics2D.OverlapCollider(parryTrigger, filter, colliders);
-            //Debug.Log(colliders.Count);
             foreach (var collider in colliders)
             {
                 if (collider.CompareTag("bullet"))
@@ -227,7 +218,6 @@ public class Character : MonoBehaviour
     public void TakeCorrosionScale()
     {
         corrosionScaleLength = corrosionMaxLevel - corrosionLevel;
-        //Debug.Log(corrosionScaleLength);
         corrosionScale.fillAmount = corrosionScaleLength / corrosionMaxLevel;
     }
     
@@ -255,6 +245,6 @@ public class Character : MonoBehaviour
         Debug.Log("Character has died");
         // Add death logic here
         Destroy(gameObject);
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("parrying");
     }
 }
